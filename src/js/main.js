@@ -86,10 +86,11 @@ addBillBtn.addEventListener("click", ()=>{
   thSalary.innerHTML = leftOfSalary;
   //table.appendChild(thSalary);
   
+  const total = new LeftOver("Totala kostnader", sum);
   const account = new LeftOver("Kvar på konto", leftOfSalary);
   const save = new LeftOver("Spar 15%",leftOfSalary * 0.15); // 15% av det som är kvar
 
-  let leftOverList = [account,save];
+  let leftOverList = [total,account,save];
   const leftOverTabe = document.createElement("table");
   const grid2 = document.createElement("section");
 
@@ -97,7 +98,6 @@ addBillBtn.addEventListener("click", ()=>{
     const th = document.createElement("th");
     const tr = document.createElement("tr");
     const td = document.createElement("td");
-
 
     th.innerHTML = leftOverList[i].leftOverName;
     td.innerHTML = Math.round(leftOverList[i].leftOverPrice);
@@ -110,8 +110,47 @@ addBillBtn.addEventListener("click", ()=>{
     tr.appendChild(td);
   }
 
-  const salaryInPercent = salary/sum*100;
-  const billInPercent = sum/salary*100;
+  const salaryInPercent = (salary/sum)*100;
+
+  const billData = billList.map((bill) => {
+    // Beräkna procentandel för varje utgift
+    const billInPercent = (bill.inputPrice / sum) * 100;
+    return [bill.inputName, billInPercent];
+  });
+
+  const data = [['Effort', 'Amount given']].concat(billData);
+  data.push(['Lön', salaryInPercent]);
+
+  const grid3 = document.createElement("section");
+  grid3.id = "donut_single";
+  google.charts.load('current', { packages: ['corechart'] });
+  google.charts.setOnLoadCallback(drawChart);
+
+  function drawChart() {
+    var dataTable = google.visualization.arrayToDataTable(data);
+
+    var options = {
+      pieHole: 0.5,
+      pieSliceTextStyle: {
+        color: 'black',
+      },
+      legend: 'none',
+    };
+
+    var chart = new google.visualization.PieChart(document.getElementById('donut_single'));
+    chart.draw(dataTable, options);
+  }
+
+  calculatedMonth.appendChild(grid3);
+
+  console.log(billList);
+  console.log(sum);
+  console.log(salaryInPercent);
+
+
+
+
+  /* const billInPercent = (sum/salary)*100;
 
   const grid3 = document.createElement("section");
   grid3.id = "donut_single";
@@ -141,7 +180,7 @@ addBillBtn.addEventListener("click", ()=>{
 
   console.log(billList);
   console.log(sum);
-  console.log(billInPercent);
+  console.log(billInPercent); */
   })
 })
 
